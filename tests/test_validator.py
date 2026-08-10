@@ -216,7 +216,7 @@ def test_url_mutation_is_quarantined():
     result = NormalizationValidator().validate(VALID_DOCUMENT, candidate)
 
     assert result.outcome == ValidationOutcome.QUARANTINE
-    assert result.error_code == ErrorCode.ERR_PROSE_MUTATION
+    assert result.error_code == ErrorCode.ERR_PROTECTED_CONTENT
 
 
 def test_citation_mutation_is_quarantined():
@@ -224,7 +224,7 @@ def test_citation_mutation_is_quarantined():
     result = NormalizationValidator().validate(VALID_DOCUMENT, candidate)
 
     assert result.outcome == ValidationOutcome.QUARANTINE
-    assert result.error_code == ErrorCode.ERR_PROSE_MUTATION
+    assert result.error_code == ErrorCode.ERR_PROTECTED_CONTENT
 
 
 def test_compliant_result_has_deterministic_classification_log():
@@ -246,6 +246,7 @@ def test_heading_normalization_log_identifies_authorized_line():
 
     assert result.outcome == ValidationOutcome.NORMALIZED
     assert result.classification_log == [
+        "PROTECTED_CONTENT|PRESERVED|count=2",
         "BODY_LINE|AUTHORIZED|"
         "line=4;class=HEADING_SYNTAX_INJECTION",
         "FINAL|NORMALIZED|error=NONE",
@@ -274,6 +275,7 @@ def test_legacy_preparation_and_metadata_migration_are_logged():
         "source=Status;candidate=status",
         "METADATA|AUTHORIZED|class=KEY_STANDARDIZATION;"
         "source=Version;candidate=version",
+        "PROTECTED_CONTENT|PRESERVED|count=2",
         "BODY|NONE|no_body_delta",
         "FINAL|NORMALIZED|error=NONE",
     ]
@@ -285,8 +287,8 @@ def test_quarantine_log_identifies_rejected_line_and_final_error():
 
     assert result.outcome == ValidationOutcome.QUARANTINE
     assert result.classification_log == [
-        "BODY_LINE|REJECTED|line=6;error=ERR_PROSE_MUTATION",
-        "FINAL|QUARANTINE|error=ERR_PROSE_MUTATION",
+        "PROTECTED_CONTENT|REJECTED|error=ERR_PROTECTED_CONTENT",
+        "FINAL|QUARANTINE|error=ERR_PROTECTED_CONTENT",
     ]
 
 

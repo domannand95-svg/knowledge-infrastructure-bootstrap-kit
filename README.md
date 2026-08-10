@@ -5,8 +5,8 @@ The Knowledge Infrastructure Bootstrap Kit (`BKI-001`) is an evidence-governed f
 ## Current baseline
 
 - Framework version: BKI-001 v1.2
-- Phase: Active Commissioning
-- Engineering focus: Repository Structural Normalization
+- Phase: Validator Commissioning Complete
+- Engineering focus: Governed integration readiness
 - MD-001 v1.0: frozen initial pilot specification
 - VAL-001 v1.0: frozen initial pilot specification
 
@@ -32,3 +32,19 @@ python -m venv .venv
 ```
 
 Model-generated transformations must not bypass deterministic validation. Repository write-back remains outside the authority of the current validator commissioning baseline.
+
+## Contributor workflow
+
+Changes must be made on a branch and submitted to `main` through a pull request.
+The protected branch requires one approval, resolved review conversations, and
+successful Python 3.11 checks on Windows and Ubuntu.
+
+Before opening or approving a pull request, run:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -p no:cacheprovider
+```
+
+The validator is an approval boundary, not a transformer. A passing validation
+result does not authorize automatic repository write-back or external AI
+integration.

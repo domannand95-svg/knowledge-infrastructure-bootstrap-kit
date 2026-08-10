@@ -11,9 +11,15 @@ from .models import (
     ValidatorError,
 )
 
+
 class DeterministicParser:
+    URL_PATTERN = re.compile(r"https?://[^\s<>()\[\]{}]+")
+    CITATION_PATTERN = re.compile(
+        r"\[(?P<key>[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+)\]"
+    )
+
     def __init__(self):
-        self.md = MarkdownIt("commonmark")
+        self.md = MarkdownIt("commonmark").enable("table")
         self.required_keys = {
             "document_id",
             "version",
@@ -22,16 +28,12 @@ class DeterministicParser:
         }
 
     def _prepare_source(self, text: str) -> str:
-        # Legacy source tolerance:
-        # - accept and strip UTF-8 BOM
-        # - normalize CRLF/CR to LF for structural parsing
         if text.startswith("\ufeff"):
             text = text[1:]
 
         return text.replace("\r\n", "\n").replace("\r", "\n")
 
     def _prepare_candidate(self, text: str) -> str:
-        # MD-001 candidate compliance is strict.
         if text.startswith("\ufeff"):
             raise ValidatorError(
                 ErrorCode.ERR_FM_SYNTAX,
@@ -80,6 +82,77 @@ class DeterministicParser:
                 "Candidate contains an unclosed fenced code block.",
             )
 
+    def _extract_protected_elements(
+        self,
+        body_raw: str,
+        tokens,
+    ) -> list[ProtectedElement]:
+        body_lines = body_raw.splitlines()
+        records = []
+        sequence = 0
+
+        def add(element_type, content, line, column=0):
+            nonlocal sequence
+            records.append(
+                (
+                    line,
+                    column,
+                    sequence,
+                    ProtectedElement(
+                        element_type=element_type,
+                        content=content,
+                        original_offset=line,
+                    ),
+                )
+            )
+            sequence += 1
+
+        for token in tokens:
+            if token.type == "fence":
+                add(
+                    "CODE_BLOCK",
+                    token.content,
+                    token.map[0] if token.map else 0,
+                )
+
+            if token.type == "table_open" and token.map:
+                start, end = token.map
+                add("TABLE", "\n".join(body_lines[start:end]), start)
+
+            if token.type == "inline" and token.children:
+                line = token.map[0] if token.map else 0
+                search_offset = 0
+
+                for child in token.children:
+                    if child.type != "code_inline":
+                        continue
+
+                    column = token.content.find(child.content, search_offset)
+
+                    if column < 0:
+                        column = search_offset
+
+                    add("INLINE_CODE", child.content, line, column)
+                    search_offset = column + len(child.content)
+
+        for line_number, line in enumerate(body_lines):
+            for match in self.URL_PATTERN.finditer(line):
+                content = match.group(0).rstrip(".,;:!?\"'")
+
+                if content:
+                    add("URL", content, line_number, match.start())
+
+            for match in self.CITATION_PATTERN.finditer(line):
+                add(
+                    "CITATION_KEY",
+                    match.group("key"),
+                    line_number,
+                    match.start(),
+                )
+
+        records.sort(key=lambda record: record[:3])
+        return [record[3] for record in records]
+
     def parse(self, text: str, is_candidate: bool) -> DocumentParse:
         if is_candidate:
             parsed_text = self._prepare_candidate(text)
@@ -87,7 +160,6 @@ class DeterministicParser:
         else:
             parsed_text = self._prepare_source(text)
 
-        # Stage 1: Frontmatter parse
         fm_match = re.match(
             r"^---\n(.*?)\n---\n(.*)",
             parsed_text,
@@ -117,7 +189,6 @@ class DeterministicParser:
                 "YAML parsing failed.",
             ) from exc
 
-        # Candidate compliance is strict.
         if is_candidate:
             if not self.required_keys.issubset(fm_data.keys()):
                 raise ValidatorError(
@@ -131,20 +202,11 @@ class DeterministicParser:
                     "Candidate requires exactly one blank line before H1.",
                 )
 
-               # Stage 2: AST extraction
         tokens = self.md.parse(body_raw)
-        protected_elements = []
-
-        for token in tokens:
-            if token.type == "fence":
-                protected_elements.append(
-                    ProtectedElement(
-                        element_type="CODE_BLOCK",
-                        content=token.content,
-                        original_offset=token.map[0] if token.map else 0,
-                    )
-                )
-
+        protected_elements = self._extract_protected_elements(
+            body_raw,
+            tokens,
+        )
         headings = []
 
         for index, token in enumerate(tokens):
@@ -164,7 +226,6 @@ class DeterministicParser:
                     )
                 )
 
-        # Structural compliance applies to candidate only.
         if is_candidate:
             h1_count = sum(
                 1 for heading in headings if heading.level == 1
@@ -186,8 +247,6 @@ class DeterministicParser:
                         "Skipped heading level detected in candidate.",
                     )
 
-
-                
         return DocumentParse(
             raw_text=parsed_text,
             frontmatter_raw=fm_raw,

@@ -1,0 +1,703 @@
+\# AI Operations Manual
+
+\| Property \| Value \|
+
+\|---\|---\|
+
+\| Document ID \| AOM-001 \|
+
+\| Version \| 1.0 \|
+
+\| Status \| Active Baseline \|
+
+\| Document Owner \| @domannand95 \|
+
+\| Effective Date \| 2026-08-07 \|
+
+\> \*\*Purpose\*\*
+
+\>
+
+\> Define the standard operational workflows governing the day-to-day
+use of artificial intelligence within the Knowledge Infrastructure
+Bootstrap Kit, Digital Archive, Sovereign OS, and associated
+engineering, education, research, and creative environments.
+
+---
+
+\# Overview
+
+Artificial intelligence platforms possess differing strengths,
+limitations, and operational costs.
+
+The objective of this manual is not to maximise AI utilisation, but to
+allocate work to the most appropriate platform while preserving
+governance, reproducibility, provenance, and long-term maintainability.
+
+This document establishes operational boundaries rather than technical
+installation procedures.
+
+---
+
+\# Objectives
+
+The AI Operations Manual aims to:
+
+\- reduce unnecessary AI usage;
+
+\- minimise cloud expenditure;
+
+\- preserve provenance;
+
+\- improve research quality;
+
+\- standardise engineering workflows;
+
+\- maintain reproducibility;
+
+\- ensure knowledge remains platform independent.
+
+---
+
+\# Scope
+
+This document defines:
+
+\- operational workflows;
+
+\- AI platform responsibilities;
+
+\- document lifecycle;
+
+\- engineering review procedures;
+
+\- research methodology;
+
+\- evidence handling;
+
+\- collaboration practices.
+
+Installation procedures are documented separately.
+
+---
+
+\# Dependencies
+
+This document should be used alongside:
+
+\- Knowledge Governance Framework
+
+\- AI Ecosystem & Infrastructure Roadmap
+
+\- AI Platform Commissioning Manual
+
+\- Workstation Profile
+
+\- Digital Archive
+
+\- Sovereign OS
+
+---
+
+\# Operating Principles
+
+Daily operations follow these principles:
+
+\- Learn before automating.
+
+\- Preserve evidence.
+
+\- Verify before promoting.
+
+\- Separate research from production.
+
+\- Keep knowledge platform independent.
+
+\- Optimise for long-term maintainability.
+
+---
+
+\# AI Platform Responsibilities
+
+\## ChatGPT
+
+Primary Functions
+
+\- architecture
+
+\- software engineering
+
+\- documentation
+
+\- governance
+
+\- planning
+
+\- debugging
+
+\- educational support
+
+Avoid
+
+\- treating responses as authoritative evidence
+
+\- replacing literature review
+
+---
+
+\## Gemini Deep Research
+
+Primary Functions
+
+\- literature review
+
+\- standards
+
+\- official documentation
+
+\- grant discovery
+
+\- comparative research
+
+\- policy review
+
+Outputs
+
+Working research only.
+
+All findings require review before becoming canonical.
+
+---
+
+\## NotebookLM
+
+Primary Functions
+
+\- source-grounded reasoning
+
+\- summarisation
+
+\- document comparison
+
+\- document question answering
+
+Primary Sources
+
+\- PDFs
+
+\- reports
+
+\- standards
+
+\- recovered documentation
+
+---
+
+\## Local AI
+
+Primary Functions
+
+\- coding
+
+\- experimentation
+
+\- private reasoning
+
+\- offline assistance
+
+\- rapid iteration
+
+Preferred Models
+
+\- Qwen Coder
+
+\- DeepSeek Coder
+
+\- Phi
+
+\- Llama
+
+\- Mistral
+
+---
+
+\## Grok
+
+Primary Functions
+
+\- alternative perspective
+
+\- technical critique
+
+\- independent comparison
+
+---
+
+\## Claude
+
+Primary Functions
+
+\- collaborative engineering review
+
+\- second-opinion analysis
+
+\- specification review
+
+---
+
+\# Standard Operational Workflow
+
+Question
+
+↓
+
+Determine objective
+
+↓
+
+Select AI platform
+
+↓
+
+Generate working material
+
+↓
+
+Review
+
+↓
+
+Evidence validation
+
+↓
+
+Revision
+
+↓
+
+Digital Archive
+
+↓
+
+Sovereign OS
+
+↓
+
+Production
+
+---
+
+\# Engineering Workflow
+
+Requirements
+
+↓
+
+Architecture
+
+↓
+
+Implementation
+
+↓
+
+Code Review
+
+↓
+
+Testing
+
+↓
+
+Verification
+
+↓
+
+Documentation
+
+↓
+
+Git Commit
+
+↓
+
+Archive
+
+---
+
+\# Research Workflow
+
+Question
+
+↓
+
+Gemini Deep Research
+
+↓
+
+Primary Sources
+
+↓
+
+NotebookLM
+
+↓
+
+Critical Review
+
+↓
+
+Evidence Register
+
+↓
+
+Technical Review
+
+↓
+
+Archive
+
+↓
+
+Publication
+
+---
+
+\# Documentation Workflow
+
+Idea
+
+↓
+
+Draft
+
+↓
+
+Review
+
+↓
+
+Revision
+
+↓
+
+Governance Review
+
+↓
+
+Version Control
+
+↓
+
+Archive
+
+↓
+
+Publication
+
+---
+
+\# Educational Workflow
+
+Learning Objective
+
+↓
+
+Independent Study
+
+↓
+
+AI Explanation
+
+↓
+
+Practice
+
+↓
+
+Verification
+
+↓
+
+Personal Notes
+
+↓
+
+Archive
+
+---
+
+\# File Recovery Workflow
+
+Recover
+
+↓
+
+Classify
+
+↓
+
+Deduplicate
+
+↓
+
+Archive
+
+↓
+
+Cross-reference
+
+↓
+
+Tag
+
+↓
+
+Repository
+
+↓
+
+Backup
+
+---
+
+\# AI Usage Policy
+
+Use local models when:
+
+\- privacy matters;
+
+\- repeated interaction is expected;
+
+\- internet is unnecessary;
+
+\- experimentation is required.
+
+Use cloud services when:
+
+\- official documentation is required;
+
+\- external evidence is needed;
+
+\- specialised reasoning is beneficial;
+
+\- very large context windows are advantageous.
+
+---
+
+\# Evidence Policy
+
+Information should progress through the following maturity pathway:
+
+Concept
+
+↓
+
+Research
+
+↓
+
+Evidence
+
+↓
+
+Analysis
+
+↓
+
+Review
+
+↓
+
+Validation
+
+↓
+
+Operational Use
+
+↓
+
+Historical Archive
+
+No document should bypass validation simply because it was generated by
+AI.
+
+---
+
+\# Prompt Development
+
+Prompts should:
+
+\- clearly define objectives;
+
+\- specify expected outputs;
+
+\- preserve provenance;
+
+\- identify assumptions;
+
+\- request uncertainty where appropriate.
+
+Reusable prompts should be version controlled.
+
+---
+
+\# Knowledge Management
+
+Canonical information resides within:
+
+\- Markdown documents
+
+\- Git repositories
+
+\- Digital Archive
+
+\- Sovereign OS
+
+AI conversations remain transient working material until incorporated
+into governed documentation.
+
+---
+
+\# Cost Optimisation
+
+Prefer:
+
+\- local inference;
+
+\- reusable prompts;
+
+\- targeted Deep Research;
+
+\- batch processing.
+
+Avoid:
+
+\- unnecessary regeneration;
+
+\- duplicate AI work;
+
+\- maintaining unused subscriptions;
+
+\- downloading unnecessary models.
+
+---
+
+\# Model Lifecycle
+
+Install
+
+↓
+
+Evaluate
+
+↓
+
+Operational Use
+
+↓
+
+Review
+
+↓
+
+Retire
+
+↓
+
+Archive Configuration
+
+Models should remain replaceable without affecting knowledge integrity.
+
+---
+
+\# Security
+
+Never:
+
+\- expose API keys;
+
+\- commit secrets;
+
+\- upload confidential information without approval.
+
+Always:
+
+\- verify sources;
+
+\- preserve provenance;
+
+\- maintain backups.
+
+---
+
+\# Operational Review
+
+Monthly
+
+\- Review storage.
+
+\- Review models.
+
+\- Review subscriptions.
+
+\- Review AI usage.
+
+Quarterly
+
+\- Review workflows.
+
+\- Review costs.
+
+\- Review documentation.
+
+\- Benchmark local models.
+
+Annually
+
+\- Review architecture.
+
+\- Update standards.
+
+\- Evaluate emerging technologies.
+
+---
+
+\# Performance Indicators
+
+The ecosystem should demonstrate:
+
+\- decreasing operational friction;
+
+\- improved reproducibility;
+
+\- lower cloud expenditure;
+
+\- increasing documentation quality;
+
+\- stronger provenance;
+
+\- improved recovery capability.
+
+---
+
+\# Revision History
+
+\| Version \| Date \| Summary \|
+
+\|---\|---\|---\|
+
+\| 1.0 \| 2026-08-07 \| Initial operational workflow baseline. \|
+
+---
+
+\# Design Principle
+
+Artificial intelligence augments human capability.
+
+It does not replace engineering judgement, scientific evidence, or
+governance.
+
+Operational excellence emerges from disciplined workflows, reproducible
+knowledge management, and continuous refinement rather than dependence
+upon any individual platform or model.

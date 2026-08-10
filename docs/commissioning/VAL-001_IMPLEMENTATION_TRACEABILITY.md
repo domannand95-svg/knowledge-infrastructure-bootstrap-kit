@@ -40,10 +40,10 @@ The specification remains authoritative. This record does not expand transformat
 | Preserve URLs as typed protected elements | Governed HTTP/HTTPS literal extraction | Typed mutation and deterministic-order tests | Verified | Extend URL grammar only through governed revision |
 | Preserve citation keys as typed protected elements | Governed bracketed uppercase-hyphen identifier extraction | Typed mutation and deterministic-order tests | Verified | Extend citation grammar only through governed revision |
 | Allow bold visual-heading conversion | `DeltaClassifier._verify_heading_conversion` | TC-VAL-002 | Verified | None |
-| Allow italic visual-heading conversion | Classifier recognizes only `**...**` source headings | None | Not implemented | Specify ambiguity rules for `*` and `_` before implementation |
+| Allow italic visual-heading conversion | Governed whole-line `*...*` and `_..._` recognition with existing structural gates | Positive asterisk/underscore and ambiguous-syntax rejection tests | Verified | Extend syntax only through governed decision revision |
 | Allow trailing-whitespace normalization | Source-only protected-boundary-aware comparison normalization | Source normalization, candidate rejection, code and table invariance tests | Verified | None |
 | Allow blank-line normalization | Source-only repeated-blank collapse with offset-independent protected comparison | Blank collapse, offset shift, candidate rejection, and protected-invariance tests | Verified | None |
-| Harmonize source line endings to LF | Source preparation normalizes CRLF/CR; candidates require LF | Candidate CRLF and legacy-source tests | Verified for current strict-candidate interpretation | Reconcile wording between MD-001 and VAL-001 |
+| Harmonize source line endings to LF | Source preparation normalizes CRLF/CR; `VAL-001-WS-001` requires candidate LF | Candidate CRLF and legacy-source tests | Verified | None |
 | Permit legacy metadata-key migration only | `LEGACY_METADATA_MAP` and metadata comparison | TC-VAL-008 | Verified | None |
 | Reject prose mutation | `DeltaClassifier._is_running_prose_mutation` | TC-VAL-003; URL and citation mutation tests | Verified | None |
 | Reject unauthorized structural changes | Delta classification fail-closed behavior | TC-VAL-007 | Verified | Add more line-cardinality cases |
@@ -51,14 +51,10 @@ The specification remains authoritative. This record does not expand transformat
 
 ## Commissioning Assessment
 
-The validator is a functioning deterministic pilot with verified core outcomes, strict candidate parsing, heading checks, fenced-code protection, metadata protection, and fail-closed prose classification. It is not yet a complete implementation of every output and protected-element commitment in `VAL-001 v1.0`.
+The validator is a functioning deterministic pilot with verified core outcomes, strict candidate parsing, heading checks, typed protected-content invariance, governed source normalization, audit metadata, classification logs, and fail-closed prose classification.
 
-The largest closure gaps are:
-
-1. italic visual-heading conversion rules.
+No known VAL-001 v1.0 pilot requirement remains classified as not implemented in this traceability record. Future closure still requires a final cross-file review and complete Windows/Linux verification checkpoint.
 
 ## Recommended Closure Order
 
-1. Reconcile specification wording for candidate line endings and permitted whitespace normalization.
-2. Decide whether italic heading conversion remains authorized or should be removed from the next specification revision.
-3. Run the complete matrix on Windows and Ubuntu before declaring VAL-001 implementation closure.
+1. Run the complete matrix on Windows and Ubuntu before declaring VAL-001 implementation closure.

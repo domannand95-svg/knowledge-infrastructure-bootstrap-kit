@@ -248,6 +248,8 @@ def test_heading_normalization_log_identifies_authorized_line():
     assert result.classification_log == [
         "PROTECTED_CONTENT|PRESERVED|count=2",
         "BODY_LINE|AUTHORIZED|"
+        "line=4;class=VISUAL_STYLING_REMOVAL",
+        "BODY_LINE|AUTHORIZED|"
         "line=4;class=HEADING_SYNTAX_INJECTION",
         "FINAL|NORMALIZED|error=NONE",
     ]

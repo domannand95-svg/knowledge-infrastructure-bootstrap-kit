@@ -4,7 +4,8 @@ from tooling.normalization.models import ErrorCode, ValidationOutcome
 from tooling.normalization.validator import NormalizationValidator
 
 
-CANONICAL_DOCUMENT = """---
+CANONICAL_DOCUMENT = (
+    """---
 document_id: WS-001
 version: 1.0
 status: Test Fixture
@@ -22,11 +23,13 @@ Stable prose with `inline_code`, https://example.com and [REF-001].
 | mode | stable |
 
 ```text
-protected trailing spaces  
-
+"""
+    + "protected trailing spaces  \n"
+    + """
 protected blank line above
 ```
 """
+)
 
 
 def test_source_trailing_whitespace_is_authorized_outside_protection():

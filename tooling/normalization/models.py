@@ -49,9 +49,20 @@ class DocumentParse:
     protected_elements: List[ProtectedElement] = field(default_factory=list)
 
 
+@dataclass(frozen=True)
+class AuditMetadata:
+    executed_at_utc: str
+    validator_version: str
+    source_document_id: str | None
+    candidate_document_id: str | None
+    outcome: ValidationOutcome
+    error_code: ErrorCode
+
+
 @dataclass
 class ValidationResult:
     outcome: ValidationOutcome
     error_code: ErrorCode
     diff: str
     classification_log: List[str] = field(default_factory=list)
+    audit_metadata: AuditMetadata | None = None

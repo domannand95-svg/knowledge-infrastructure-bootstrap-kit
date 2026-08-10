@@ -1,19 +1,66 @@
-﻿import difflib
+import difflib
+from collections.abc import Callable
+from datetime import datetime, timezone
 
 from .models import (
     ValidationResult,
     ValidationOutcome,
     ErrorCode,
     ValidatorError,
+    AuditMetadata,
 )
 from .parser import DeterministicParser
 from .classifier import DeltaClassifier
 
 
 class NormalizationValidator:
-    def __init__(self):
+    VERSION = "VAL-001 v1.0-pilot"
+
+    def __init__(
+        self,
+        clock: Callable[[], datetime] | None = None,
+    ):
         self.parser = DeterministicParser()
         self.classifier = DeltaClassifier()
+        self.clock = clock or (lambda: datetime.now(timezone.utc))
+
+    def _document_id(self, document_parse):
+        if document_parse is None:
+            return None
+
+        value = document_parse.frontmatter_data.get("document_id")
+
+        if value is None:
+            value = document_parse.frontmatter_data.get("Document ID")
+
+        return str(value) if value is not None else None
+
+    def _audit_metadata(
+        self,
+        source_parse,
+        candidate_parse,
+        outcome: ValidationOutcome,
+        error_code: ErrorCode,
+    ) -> AuditMetadata:
+        executed_at = self.clock()
+
+        if executed_at.tzinfo is None or executed_at.utcoffset() is None:
+            raise ValueError("Audit clock must return a timezone-aware datetime.")
+
+        executed_at_utc = (
+            executed_at.astimezone(timezone.utc)
+            .isoformat(timespec="seconds")
+            .replace("+00:00", "Z")
+        )
+
+        return AuditMetadata(
+            executed_at_utc=executed_at_utc,
+            validator_version=self.VERSION,
+            source_document_id=self._document_id(source_parse),
+            candidate_document_id=self._document_id(candidate_parse),
+            outcome=outcome,
+            error_code=error_code,
+        )
 
     def validate(
         self,
@@ -21,6 +68,8 @@ class NormalizationValidator:
         candidate_text: str,
     ) -> ValidationResult:
         classification_log = []
+        source_parse = None
+        candidate_parse = None
         diff = "".join(
             difflib.unified_diff(
                 source_text.splitlines(keepends=True),
@@ -54,35 +103,57 @@ class NormalizationValidator:
             )
 
             if error_code != ErrorCode.NONE:
+                outcome = ValidationOutcome.QUARANTINE
                 classification_log.append(
                     "FINAL|QUARANTINE|"
                     f"error={error_code.value}"
                 )
                 return ValidationResult(
-                    ValidationOutcome.QUARANTINE,
+                    outcome,
                     error_code,
                     diff,
                     classification_log,
+                    self._audit_metadata(
+                        source_parse,
+                        candidate_parse,
+                        outcome,
+                        error_code,
+                    ),
                 )
 
             if source_text == candidate_text:
+                outcome = ValidationOutcome.COMPLIANT
                 classification_log.append("FINAL|COMPLIANT|error=NONE")
                 return ValidationResult(
-                    ValidationOutcome.COMPLIANT,
+                    outcome,
                     ErrorCode.NONE,
                     diff,
                     classification_log,
+                    self._audit_metadata(
+                        source_parse,
+                        candidate_parse,
+                        outcome,
+                        ErrorCode.NONE,
+                    ),
                 )
 
+            outcome = ValidationOutcome.NORMALIZED
             classification_log.append("FINAL|NORMALIZED|error=NONE")
             return ValidationResult(
-                ValidationOutcome.NORMALIZED,
+                outcome,
                 ErrorCode.NONE,
                 diff,
                 classification_log,
+                self._audit_metadata(
+                    source_parse,
+                    candidate_parse,
+                    outcome,
+                    ErrorCode.NONE,
+                ),
             )
 
         except ValidatorError as exc:
+            outcome = ValidationOutcome.QUARANTINE
             classification_log.extend(
                 [
                     f"PARSE|REJECTED|error={exc.code.value}",
@@ -90,8 +161,14 @@ class NormalizationValidator:
                 ]
             )
             return ValidationResult(
-                ValidationOutcome.QUARANTINE,
+                outcome,
                 exc.code,
                 diff,
                 classification_log,
+                self._audit_metadata(
+                    source_parse,
+                    candidate_parse,
+                    outcome,
+                    exc.code,
+                ),
             )

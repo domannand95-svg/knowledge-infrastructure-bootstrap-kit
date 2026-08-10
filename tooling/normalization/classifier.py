@@ -17,41 +17,73 @@ class DeltaClassifier:
         self,
         source: DocumentParse,
         candidate: DocumentParse,
+        classification_log: list[str],
     ) -> ErrorCode:
         # No transformation.
         if source.raw_text == candidate.raw_text:
+            classification_log.append(
+                "DELTA|NONE|prepared_source_and_candidate_identical"
+            )
             return ErrorCode.NONE
 
-        metadata_result = self._verify_metadata(source, candidate)
+        metadata_result = self._verify_metadata(
+            source,
+            candidate,
+            classification_log,
+        )
 
         if metadata_result != ErrorCode.NONE:
             return metadata_result
 
         if source.protected_elements != candidate.protected_elements:
+            classification_log.append(
+                "PROTECTED_CONTENT|REJECTED|"
+                "error=ERR_PROTECTED_CONTENT"
+            )
             return ErrorCode.ERR_PROTECTED_CONTENT
+
+        if source.protected_elements:
+            classification_log.append(
+                "PROTECTED_CONTENT|PRESERVED|"
+                f"count={len(source.protected_elements)}"
+            )
 
         return self._verify_body_transformations(
             source.body_raw,
             candidate.body_raw,
+            classification_log,
         )
 
     def _verify_metadata(
         self,
         source: DocumentParse,
         candidate: DocumentParse,
+        classification_log: list[str],
     ) -> ErrorCode:
         migrated_source = {}
+        migrated_keys = []
 
         for key, value in source.frontmatter_data.items():
             if key in self.LEGACY_METADATA_MAP:
                 normalized_key = self.LEGACY_METADATA_MAP[key]
+                migrated_keys.append((key, normalized_key))
             else:
                 normalized_key = key
 
             migrated_source[normalized_key] = value
 
         if migrated_source != candidate.frontmatter_data:
+            classification_log.append(
+                "METADATA|REJECTED|error=ERR_PROTECTED_CONTENT"
+            )
             return ErrorCode.ERR_PROTECTED_CONTENT
+
+        for source_key, candidate_key in sorted(migrated_keys):
+            classification_log.append(
+                "METADATA|AUTHORIZED|"
+                f"class=KEY_STANDARDIZATION;source={source_key};"
+                f"candidate={candidate_key}"
+            )
 
         return ErrorCode.NONE
 
@@ -59,14 +91,21 @@ class DeltaClassifier:
         self,
         source_body: str,
         candidate_body: str,
+        classification_log: list[str],
     ) -> ErrorCode:
         if source_body == candidate_body:
+            classification_log.append("BODY|NONE|no_body_delta")
             return ErrorCode.NONE
 
         source_lines = source_body.splitlines()
         candidate_lines = candidate_body.splitlines()
 
         if len(source_lines) != len(candidate_lines):
+            classification_log.append(
+                "BODY|REJECTED|error=ERR_UNAUTHORIZED_DELTA;"
+                f"source_lines={len(source_lines)};"
+                f"candidate_lines={len(candidate_lines)}"
+            )
             return ErrorCode.ERR_UNAUTHORIZED_DELTA
 
         for index, (source_line, candidate_line) in enumerate(
@@ -79,6 +118,10 @@ class DeltaClassifier:
                 source_line,
                 candidate_line,
             ):
+                classification_log.append(
+                    "BODY_LINE|REJECTED|"
+                    f"line={index + 1};error=ERR_PROSE_MUTATION"
+                )
                 return ErrorCode.ERR_PROSE_MUTATION
 
             result = self._verify_heading_conversion(
@@ -90,7 +133,16 @@ class DeltaClassifier:
             )
 
             if result != ErrorCode.NONE:
+                classification_log.append(
+                    "BODY_LINE|REJECTED|"
+                    f"line={index + 1};error={result.value}"
+                )
                 return result
+
+            classification_log.append(
+                "BODY_LINE|AUTHORIZED|"
+                f"line={index + 1};class=HEADING_SYNTAX_INJECTION"
+            )
 
         return ErrorCode.NONE
 

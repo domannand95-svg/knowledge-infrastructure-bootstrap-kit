@@ -225,3 +225,79 @@ def test_citation_mutation_is_quarantined():
 
     assert result.outcome == ValidationOutcome.QUARANTINE
     assert result.error_code == ErrorCode.ERR_PROSE_MUTATION
+
+
+def test_compliant_result_has_deterministic_classification_log():
+    validator = NormalizationValidator()
+
+    first = validator.validate(VALID_DOCUMENT, VALID_DOCUMENT)
+    second = validator.validate(VALID_DOCUMENT, VALID_DOCUMENT)
+
+    assert first.classification_log == [
+        "DELTA|NONE|prepared_source_and_candidate_identical",
+        "FINAL|COMPLIANT|error=NONE",
+    ]
+    assert second.classification_log == first.classification_log
+
+
+def test_heading_normalization_log_identifies_authorized_line():
+    source = VALID_DOCUMENT.replace("## Section", "**Section**")
+    result = NormalizationValidator().validate(source, VALID_DOCUMENT)
+
+    assert result.outcome == ValidationOutcome.NORMALIZED
+    assert result.classification_log == [
+        "BODY_LINE|AUTHORIZED|"
+        "line=4;class=HEADING_SYNTAX_INJECTION",
+        "FINAL|NORMALIZED|error=NONE",
+    ]
+
+
+def test_legacy_preparation_and_metadata_migration_are_logged():
+    source = (
+        "\ufeff"
+        + VALID_DOCUMENT.replace("document_id:", "Document ID:")
+        .replace("version:", "Version:")
+        .replace("status:", "Status:")
+        .replace("last_revised:", "Last Revised:")
+    )
+    result = NormalizationValidator().validate(source, VALID_DOCUMENT)
+
+    assert result.outcome == ValidationOutcome.NORMALIZED
+    assert result.classification_log == [
+        "SOURCE_PREPARATION|AUTHORIZED|"
+        "class=LEGACY_INPUT_NORMALIZATION",
+        "METADATA|AUTHORIZED|class=KEY_STANDARDIZATION;"
+        "source=Document ID;candidate=document_id",
+        "METADATA|AUTHORIZED|class=KEY_STANDARDIZATION;"
+        "source=Last Revised;candidate=last_revised",
+        "METADATA|AUTHORIZED|class=KEY_STANDARDIZATION;"
+        "source=Status;candidate=status",
+        "METADATA|AUTHORIZED|class=KEY_STANDARDIZATION;"
+        "source=Version;candidate=version",
+        "BODY|NONE|no_body_delta",
+        "FINAL|NORMALIZED|error=NONE",
+    ]
+
+
+def test_quarantine_log_identifies_rejected_line_and_final_error():
+    candidate = VALID_DOCUMENT.replace("example.com", "example.org")
+    result = NormalizationValidator().validate(VALID_DOCUMENT, candidate)
+
+    assert result.outcome == ValidationOutcome.QUARANTINE
+    assert result.classification_log == [
+        "BODY_LINE|REJECTED|line=6;error=ERR_PROSE_MUTATION",
+        "FINAL|QUARANTINE|error=ERR_PROSE_MUTATION",
+    ]
+
+
+def test_parse_failure_log_identifies_error_and_final_outcome():
+    result = NormalizationValidator().validate(
+        VALID_DOCUMENT,
+        "\ufeff" + VALID_DOCUMENT,
+    )
+
+    assert result.outcome == ValidationOutcome.QUARANTINE
+    assert result.classification_log == [
+        "PARSE|REJECTED|error=ERR_FM_SYNTAX",
+        "FINAL|QUARANTINE|error=ERR_FM_SYNTAX",
+    ]

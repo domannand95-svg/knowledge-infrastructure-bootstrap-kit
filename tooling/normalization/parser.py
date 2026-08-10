@@ -46,9 +46,44 @@ class DeterministicParser:
 
         return text
 
+    def _validate_fenced_code_blocks(self, text: str) -> None:
+        opening_character = None
+        opening_length = 0
+
+        for line in text.splitlines():
+            if opening_character is None:
+                opening_match = re.match(
+                    r"^ {0,3}(`{3,}|~{3,})(.*)$",
+                    line,
+                )
+
+                if opening_match:
+                    fence = opening_match.group(1)
+                    opening_character = fence[0]
+                    opening_length = len(fence)
+
+                continue
+
+            closing_match = re.match(
+                rf"^ {{0,3}}({re.escape(opening_character)}"
+                rf"{{{opening_length},}})[ \t]*$",
+                line,
+            )
+
+            if closing_match:
+                opening_character = None
+                opening_length = 0
+
+        if opening_character is not None:
+            raise ValidatorError(
+                ErrorCode.ERR_PROTECTED_CONTENT,
+                "Candidate contains an unclosed fenced code block.",
+            )
+
     def parse(self, text: str, is_candidate: bool) -> DocumentParse:
         if is_candidate:
             parsed_text = self._prepare_candidate(text)
+            self._validate_fenced_code_blocks(parsed_text)
         else:
             parsed_text = self._prepare_source(text)
 

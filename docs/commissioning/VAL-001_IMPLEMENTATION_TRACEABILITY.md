@@ -27,7 +27,7 @@ The specification remains authoritative. This record does not expand transformat
 | Accept source and candidate Markdown inputs | `NormalizationValidator.validate` | All 18 tests | Verified | None |
 | Return exactly one deterministic outcome | `ValidationOutcome` and `NormalizationValidator.validate` | TC-VAL-001–008 and edge matrix | Verified | None |
 | Produce a unified source/candidate diff | `difflib.unified_diff` in `validator.py` | TC-VAL-001, TC-VAL-002, TC-VAL-008 | Verified | Add focused quarantine-diff assertions later |
-| Produce an itemized classification log | `ValidationResult.classification_log` exists but is never populated | None | Not implemented | Define deterministic log schema before implementation |
+| Produce an itemized classification log | `ValidationResult.classification_log`, `DeltaClassifier`, and `NormalizationValidator` | Compliant, normalized, metadata-migration, rejected-delta, and parse-failure log tests | Verified | Extend event classes as new governed transformations are implemented |
 | Produce audit metadata | No result field or audit record exists | None | Not implemented | Govern version, timestamp, and identifier schema first |
 | Legacy-tolerant source frontmatter parse | `DeterministicParser._prepare_source` and source YAML parse | TC-VAL-008; legacy BOM test | Verified | Add legacy-key boundary cases if required |
 | Strict candidate frontmatter and required keys | `DeterministicParser.parse` | Missing-key, malformed-YAML, candidate-BOM tests | Verified | None |
@@ -55,16 +55,15 @@ The validator is a functioning deterministic pilot with verified core outcomes, 
 
 The largest closure gaps are:
 
-1. deterministic classification logs;
-2. governed audit metadata;
-3. typed protection for inline code, tables, URLs, and citations;
-4. explicitly bounded whitespace normalization; and
-5. italic visual-heading conversion rules.
+1. governed audit metadata;
+2. typed protection for inline code, tables, URLs, and citations;
+3. explicitly bounded whitespace normalization; and
+4. italic visual-heading conversion rules.
 
 ## Recommended Closure Order
 
 1. Reconcile specification wording for candidate line endings and permitted whitespace normalization.
-2. Define audit metadata and classification-log schemas without implementing repository write-back.
+2. Define the audit metadata schema without implementing repository write-back.
 3. Extend protected-element extraction with focused adversarial tests.
 4. Decide whether italic heading conversion remains authorized or should be removed from the next specification revision.
 5. Run the complete matrix on Windows and Ubuntu before declaring VAL-001 implementation closure.

@@ -13,6 +13,22 @@ class DeltaClassifier:
 
     TERMINAL_PUNCTUATION = (".", ",", ";", ":", "?", "!")
 
+    def _visual_heading_content(self, line: str) -> str | None:
+        stripped = line.strip()
+        patterns = (
+            r"\*\*(.+?)\*\*",
+            r"\*([^*]+)\*",
+            r"_([^_]+)_",
+        )
+
+        for pattern in patterns:
+            match = re.fullmatch(pattern, stripped)
+
+            if match:
+                return match.group(1)
+
+        return None
+
     def classify(
         self,
         source: DocumentParse,
@@ -147,6 +163,10 @@ class DeltaClassifier:
 
             classification_log.append(
                 "BODY_LINE|AUTHORIZED|"
+                f"line={index + 1};class=VISUAL_STYLING_REMOVAL"
+            )
+            classification_log.append(
+                "BODY_LINE|AUTHORIZED|"
                 f"line={index + 1};class=HEADING_SYNTAX_INJECTION"
             )
 
@@ -164,7 +184,7 @@ class DeltaClassifier:
             return False
 
         # Exclude the authorized visual-heading pathway.
-        if re.fullmatch(r"\*\*(.+?)\*\*", source_text):
+        if self._visual_heading_content(source_text) is not None:
             return False
 
         if re.fullmatch(r"(#{1,6})[ \t]+(.+)", candidate_text):
@@ -183,20 +203,16 @@ class DeltaClassifier:
         source_line: str,
         candidate_line: str,
     ) -> ErrorCode:
-        bold_match = re.fullmatch(
-            r"\*\*(.+?)\*\*",
-            source_line.strip(),
-        )
-
         heading_match = re.fullmatch(
             r"(#{1,6})[ \t]+(.+)",
             candidate_line.strip(),
         )
 
-        if not bold_match or not heading_match:
+        source_content = self._visual_heading_content(source_line)
+
+        if source_content is None or not heading_match:
             return ErrorCode.ERR_UNAUTHORIZED_DELTA
 
-        source_content = bold_match.group(1)
         candidate_content = heading_match.group(2)
 
         # Underlying heading text must be identical.

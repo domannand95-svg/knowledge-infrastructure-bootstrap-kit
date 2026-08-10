@@ -29,7 +29,7 @@ class ValidatorError(Exception):
 class ProtectedElement:
     element_type: str
     content: str
-    original_offset: int
+    original_offset: int = field(compare=False)
 
 
 @dataclass
@@ -47,6 +47,7 @@ class DocumentParse:
     body_raw: str
     headings: List[HeadingNode] = field(default_factory=list)
     protected_elements: List[ProtectedElement] = field(default_factory=list)
+    whitespace_transformations: List[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

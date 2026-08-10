@@ -41,8 +41,8 @@ The specification remains authoritative. This record does not expand transformat
 | Preserve citation keys as typed protected elements | Governed bracketed uppercase-hyphen identifier extraction | Typed mutation and deterministic-order tests | Verified | Extend citation grammar only through governed revision |
 | Allow bold visual-heading conversion | `DeltaClassifier._verify_heading_conversion` | TC-VAL-002 | Verified | None |
 | Allow italic visual-heading conversion | Classifier recognizes only `**...**` source headings | None | Not implemented | Specify ambiguity rules for `*` and `_` before implementation |
-| Allow trailing-whitespace normalization | No explicit authorized-delta implementation | None | Not implemented | Add protected-boundary-aware classifier behavior and tests |
-| Allow blank-line normalization | Equal line counts and unchanged surrounding lines are currently required | None | Not implemented | Define exact bounded transformations first |
+| Allow trailing-whitespace normalization | Source-only protected-boundary-aware comparison normalization | Source normalization, candidate rejection, code and table invariance tests | Verified | None |
+| Allow blank-line normalization | Source-only repeated-blank collapse with offset-independent protected comparison | Blank collapse, offset shift, candidate rejection, and protected-invariance tests | Verified | None |
 | Harmonize source line endings to LF | Source preparation normalizes CRLF/CR; candidates require LF | Candidate CRLF and legacy-source tests | Verified for current strict-candidate interpretation | Reconcile wording between MD-001 and VAL-001 |
 | Permit legacy metadata-key migration only | `LEGACY_METADATA_MAP` and metadata comparison | TC-VAL-008 | Verified | None |
 | Reject prose mutation | `DeltaClassifier._is_running_prose_mutation` | TC-VAL-003; URL and citation mutation tests | Verified | None |
@@ -55,8 +55,7 @@ The validator is a functioning deterministic pilot with verified core outcomes, 
 
 The largest closure gaps are:
 
-1. explicitly bounded whitespace normalization; and
-2. italic visual-heading conversion rules.
+1. italic visual-heading conversion rules.
 
 ## Recommended Closure Order
 

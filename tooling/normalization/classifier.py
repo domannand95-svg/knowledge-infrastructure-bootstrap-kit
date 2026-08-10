@@ -48,6 +48,12 @@ class DeltaClassifier:
                 f"count={len(source.protected_elements)}"
             )
 
+        for transformation in source.whitespace_transformations:
+            classification_log.append(
+                "BODY|AUTHORIZED|"
+                f"class={transformation}"
+            )
+
         return self._verify_body_transformations(
             source.body_raw,
             candidate.body_raw,

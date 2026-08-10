@@ -82,6 +82,98 @@ class DeterministicParser:
                 "Candidate contains an unclosed fenced code block.",
             )
 
+    def _protected_line_numbers(self, tokens) -> set[int]:
+        protected = set()
+
+        for token in tokens:
+            if token.type not in {
+                "fence",
+                "code_block",
+                "table_open",
+                "html_block",
+            }:
+                continue
+
+            if token.map:
+                start, end = token.map
+                protected.update(range(start, end))
+
+        return protected
+
+    def _normalize_source_whitespace(
+        self,
+        body_raw: str,
+        tokens,
+    ) -> tuple[str, list[str]]:
+        protected = self._protected_line_numbers(tokens)
+        normalized_lines = []
+        previous_blank = False
+        removed_trailing_whitespace = False
+        collapsed_blank_lines = False
+
+        for index, line in enumerate(body_raw.splitlines()):
+            if index in protected:
+                normalized_lines.append(line)
+                previous_blank = False
+                continue
+
+            normalized_line = line.rstrip(" \t")
+
+            if normalized_line != line:
+                removed_trailing_whitespace = True
+
+            if normalized_line == "":
+                if previous_blank:
+                    collapsed_blank_lines = True
+                    continue
+
+                previous_blank = True
+            else:
+                previous_blank = False
+
+            normalized_lines.append(normalized_line)
+
+        normalized_body = "\n".join(normalized_lines)
+
+        if body_raw.endswith("\n"):
+            normalized_body += "\n"
+
+        transformations = []
+
+        if removed_trailing_whitespace:
+            transformations.append("TRAILING_WHITESPACE_REMOVAL")
+
+        if collapsed_blank_lines:
+            transformations.append("BLANK_LINE_COLLAPSE")
+
+        return normalized_body, transformations
+
+    def _validate_candidate_whitespace(self, body_raw: str, tokens) -> None:
+        protected = self._protected_line_numbers(tokens)
+        previous_blank = False
+
+        for index, line in enumerate(body_raw.splitlines()):
+            if index in protected:
+                previous_blank = False
+                continue
+
+            if line != line.rstrip(" \t"):
+                raise ValidatorError(
+                    ErrorCode.ERR_UNAUTHORIZED_DELTA,
+                    "Candidate contains trailing whitespace.",
+                )
+
+            if line == "":
+                if previous_blank:
+                    raise ValidatorError(
+                        ErrorCode.ERR_UNAUTHORIZED_DELTA,
+                        "Candidate contains repeated blank lines.",
+                    )
+
+                previous_blank = True
+            else:
+                previous_blank = False
+
     def _extract_protected_elements(
         self,
         body_raw: str,
@@ -203,10 +295,22 @@ class DeterministicParser:
                 )
 
         tokens = self.md.parse(body_raw)
+
+        if is_candidate:
+            self._validate_candidate_whitespace(body_raw, tokens)
+
         protected_elements = self._extract_protected_elements(
             body_raw,
             tokens,
         )
+        comparison_body = body_raw
+        whitespace_transformations = []
+
+        if not is_candidate:
+            (
+                comparison_body,
+                whitespace_transformations,
+            ) = self._normalize_source_whitespace(body_raw, tokens)
         headings = []
 
         for index, token in enumerate(tokens):
@@ -251,7 +355,8 @@ class DeterministicParser:
             raw_text=parsed_text,
             frontmatter_raw=fm_raw,
             frontmatter_data=fm_data,
-            body_raw=body_raw,
+            body_raw=comparison_body,
             headings=headings,
             protected_elements=protected_elements,
+            whitespace_transformations=whitespace_transformations,
         )

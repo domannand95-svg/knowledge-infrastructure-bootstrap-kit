@@ -64,4 +64,9 @@ print(result.diff)
 
 Validation results are advisory repository evidence until reviewed by a human operator. The validator does not authorize autonomous write-back, transformer execution, publication, or promotion of quarantined material.
 
-The current implementation does not yet populate classification logs or audit metadata and does not fully implement every protected-element category described by `VAL-001 v1.0`. See `docs/commissioning/VAL-001_IMPLEMENTATION_TRACEABILITY.md` for the empirical gap record.
+The current implementation populates deterministic classification logs and
+immutable audit metadata for every validation result. It enforces the governed
+protected-element categories for fenced code, inline code, GFM tables, literal
+HTTP/HTTPS URLs, citation keys, and frontmatter metadata. See
+`docs/commissioning/VAL-001_IMPLEMENTATION_TRACEABILITY.md` for the complete
+implementation evidence and boundary record.

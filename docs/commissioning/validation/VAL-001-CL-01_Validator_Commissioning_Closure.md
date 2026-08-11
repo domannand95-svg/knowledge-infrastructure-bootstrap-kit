@@ -1,32 +1,49 @@
 ---
 
 ## document_id: VAL-001-CL-01
-version: 1.0
+version: 1.1
 status: Closure Record
-last_revised: 2026-08-09
+last_revised: 2026-08-10
 
 # VAL-001 Validator Commissioning Closure Record
 
 ## Scope
 
-Records the formal closure of the `VAL-001` deterministic normalization validator commissioning phase following successful verification of the complete 8/8 test matrix and execution of the subsystem closure review.
+Records the formal closure of the `VAL-001` deterministic normalization
+validator commissioning phase following implementation traceability review,
+cross-file consistency review, and successful verification of the complete
+46-test regression suite on Windows and Ubuntu.
 
 ## Commissioning Summary
 
 The deterministic normalization validator implementation has completed its initial commissioning lifecycle:
 
-* **Defined Test Matrix:** 8 / 8 verified passing (`TC-VAL-001` through `TC-VAL-008`).
-* **Regression Gate:** Full test suite execution yields 8 passed with zero regressions.
-* **Hygiene and Syntax:** Subsystem compiles cleanly under the commissioned Python 3.11.9 environment and maintains strict structural separation between source extraction and candidate compliance validation.
+* **Defined Commissioning Cases:** `TC-VAL-001` through `TC-VAL-008` remain verified.
+* **Extended Regression Gate:** 46 automated tests pass with zero regressions.
+* **Platform Verification:** Python 3.11 checks pass on Windows and Ubuntu.
+* **Governed Coverage:** Classification logs, audit metadata, typed protected
+  elements, source-only whitespace normalization, and visual heading decisions
+  are implemented and tested.
+* **Repository Controls:** Pull requests, one approval, current Windows and
+  Ubuntu checks, and resolved review conversations are required for `main`.
+* **Hygiene and Syntax:** The subsystem remains structurally separated between
+  source extraction, candidate compliance validation, and delta classification.
 
 ## Subsystem Invariants Established
 
 The closed validator enforces the following deterministic guarantees:
 
 1. **Structural Integrity:** Enforces `MD-001` snake_case frontmatter keys, unique H1 headings, and valid heading nesting on candidate documents while tolerating legacy source formats.
-2. **Protected Content Enforcement:** Fenced code blocks and protected frontmatter metadata values are locked against unauthorized mutation.
+2. **Protected Content Enforcement:** Fenced code blocks, inline code, GFM
+   tables, governed URLs, citation keys, and protected frontmatter metadata
+   values are locked against unauthorized mutation.
 3. **Prose and Heading Bounds:** Running prose is protected against unrequested LLM-style modifications, and terminal-punctuated text is blocked from conversion into phantom headings.
-4. **Fail-Closed Routing:** Any unverified delta or syntax violation automatically routes candidates to `FAIL — QUARANTINE` with explicit `ErrorCode` classification.
+4. **Governed Normalization:** Only defined source-side whitespace and visual
+   heading differences can be normalized; candidates remain strict.
+5. **Traceable Decisions:** Every result contains deterministic classification
+   events and immutable audit metadata.
+6. **Fail-Closed Routing:** Any unverified delta or syntax violation routes
+   candidates to `FAIL — QUARANTINE` with explicit `ErrorCode` classification.
 
 ## Formal Closure Status
 
@@ -38,7 +55,11 @@ The closed validator enforces the following deterministic guarantees:
 
 With `VAL-001` formally closed, further engineering advancement requires an explicit authorization decision:
 
-1. **Extended Robustness:** Expand the test matrix beyond the initial 8 cases to cover deeper edge conditions, such as complex multi-section documents and embedded lists.
-2. **Transformer Integration:** Formally initiate a separately governed pilot phase to connect the constrained Markdown normalization adapter (`Mistral`) under strict `VAL-001` quarantine oversight.
+1. **Integration Contract:** Define a read-only, version-pinned beta interface
+   for an external consumer such as Sovereign OS.
+2. **Extended Robustness:** Add adversarial cases only where new evidence or a
+   governed requirement identifies a boundary worth protecting.
+3. **Transformer Integration:** Initiate a separately governed pilot only after
+   explicit authorization and under strict `VAL-001` quarantine oversight.
 
 No transformer integration, repository write-back, or expansion of normalization authority is authorized by this closure record.

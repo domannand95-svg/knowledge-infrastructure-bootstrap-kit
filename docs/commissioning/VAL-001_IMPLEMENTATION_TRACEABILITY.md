@@ -53,8 +53,13 @@ The specification remains authoritative. This record does not expand transformat
 
 The validator is a functioning deterministic pilot with verified core outcomes, strict candidate parsing, heading checks, typed protected-content invariance, governed source normalization, audit metadata, classification logs, and fail-closed prose classification.
 
-No known VAL-001 v1.0 pilot requirement remains classified as not implemented in this traceability record. Future closure still requires a final cross-file review and complete Windows/Linux verification checkpoint.
+No known `VAL-001 v1.0` pilot requirement remains classified as not implemented
+in this traceability record. The final cross-file review and complete
+Windows/Linux verification checkpoint were recorded on 2026-08-10 in
+`BKI-001_COMMISSIONING_CLOSURE_2026-08-10.md`.
 
 ## Recommended Closure Order
 
-1. Run the complete matrix on Windows and Ubuntu before declaring VAL-001 implementation closure.
+1. Preserve the complete Windows and Ubuntu matrix as a required pull-request gate.
+2. Treat any expansion of transformation authority as a new governed decision.
+3. Keep transformer integration and repository write-back separately authorized.

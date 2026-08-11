@@ -5,8 +5,8 @@ The Knowledge Infrastructure Bootstrap Kit (`BKI-001`) is an evidence-governed f
 ## Current baseline
 
 - Framework version: BKI-001 v1.2
-- Phase: Validator Commissioning Complete
-- Engineering focus: Governed integration readiness
+- Phase: Validator commissioning complete; read-only integration boundary operational
+- Engineering focus: Private beta readiness and contract stability
 - MD-001 v1.0: frozen initial pilot specification
 - VAL-001 v1.0: frozen initial pilot specification
 
@@ -20,6 +20,25 @@ The Knowledge Infrastructure Bootstrap Kit (`BKI-001`) is an evidence-governed f
 - `tooling/normalization/` — deterministic parser, classifier, and validator
 - `tests/` — validator test suite and fixtures
 - `reconciliation/` — baseline authority and scope record
+
+## Implemented validator boundary
+
+The current validator provides:
+
+- deterministic Markdown classification and validation;
+- governed whitespace normalization with protected code, table, URL, and
+  citation boundaries;
+- itemized classification logging;
+- typed protected-region handling;
+- the versioned `bki.validation.v1` JSON command-line contract;
+- fail-closed translation of unknown or incomplete validation states; and
+- read-only operation with repository write-back and promotion outside its
+  authority.
+
+Sovereign OS pins a reviewed BKI revision and exercises this contract in live
+Windows and Linux CI through a read-only deploy key. The repositories remain
+independently testable and communicate through the versioned contract rather
+than shared internal implementation assumptions.
 
 ## Local development
 
@@ -46,5 +65,14 @@ Before opening or approving a pull request, run:
 ```
 
 The validator is an approval boundary, not a transformer. A passing validation
-result does not authorize automatic repository write-back or external AI
-integration.
+result does not authorize automatic repository write-back, artifact promotion,
+or external AI integration. Human review and all required Windows and Ubuntu
+checks must pass before `main` changes.
+
+## Near-term direction
+
+1. Keep `bki.validation.v1` stable and fail closed.
+2. Expand adversarial fixtures without weakening protected-region invariants.
+3. Maintain Windows and Linux parity.
+4. Integrate with Sovereign OS only through explicit, versioned, read-only
+   contracts until both projects reach private beta readiness.

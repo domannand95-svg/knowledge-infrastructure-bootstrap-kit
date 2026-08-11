@@ -7,9 +7,11 @@ last_revised: 2026-08-10
 
 # BKI Deterministic Validator Usage
 
-## Supported Interface
+## Supported Interfaces
 
-The current validator is a Python library interface. It accepts source and candidate Markdown as strings and returns a `ValidationResult`. No command-line interface, transformer integration, or repository write-back mechanism is currently authorized or provided.
+The validator provides a Python library interface and a read-only command-line
+adapter. Neither interface provides transformation, promotion, network, or
+repository write-back authority.
 
 ## Environment
 
@@ -42,6 +44,24 @@ print(result.outcome.value)
 print(result.error_code.value)
 print(result.diff)
 ```
+
+## Read-Only Command-Line Adapter
+
+```powershell
+python -m tooling.normalization.cli `
+  --source source.md `
+  --candidate candidate.md `
+  --format bki.validation.v1
+```
+
+The adapter reads only the two explicitly named regular UTF-8 files and emits
+one schema-valid JSON object to standard output. It rejects URLs, directories,
+links and junctions, unsupported encodings, missing files, and unknown contract
+versions. It never writes a file or contacts a network service.
+
+Exit status `0` means compliant or governed normalization, `2` means quarantine,
+and `3` means the invocation or contract failed closed. A successful exit is
+validation evidence only and never authorizes publication or promotion.
 
 ## Outcomes
 

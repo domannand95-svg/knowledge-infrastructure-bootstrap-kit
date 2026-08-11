@@ -47,7 +47,9 @@ The adapter shall:
 - apply a caller-enforced timeout and resource budget; and
 - produce output conforming to `bki-validation-result-v1.schema.json`.
 
-This command is a proposed interface, not a currently implemented capability.
+This interface is implemented as a read-only adapter. Beta activation remains
+subject to the release, consumer, compatibility-CI, and owner-approval gates
+defined below.
 
 ## Result Semantics
 

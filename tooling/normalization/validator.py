@@ -1,4 +1,5 @@
 import difflib
+import hashlib
 from collections.abc import Callable
 from datetime import datetime, timezone
 
@@ -39,6 +40,8 @@ class NormalizationValidator:
         self,
         source_parse,
         candidate_parse,
+        source_sha256: str,
+        candidate_sha256: str,
         outcome: ValidationOutcome,
         error_code: ErrorCode,
     ) -> AuditMetadata:
@@ -56,6 +59,8 @@ class NormalizationValidator:
         return AuditMetadata(
             executed_at_utc=executed_at_utc,
             validator_version=self.VERSION,
+            source_sha256=source_sha256,
+            candidate_sha256=candidate_sha256,
             source_document_id=self._document_id(source_parse),
             candidate_document_id=self._document_id(candidate_parse),
             outcome=outcome,
@@ -68,6 +73,10 @@ class NormalizationValidator:
         candidate_text: str,
     ) -> ValidationResult:
         classification_log = []
+        source_sha256 = hashlib.sha256(source_text.encode("utf-8")).hexdigest()
+        candidate_sha256 = hashlib.sha256(
+            candidate_text.encode("utf-8")
+        ).hexdigest()
         source_parse = None
         candidate_parse = None
         diff = "".join(
@@ -116,6 +125,8 @@ class NormalizationValidator:
                     self._audit_metadata(
                         source_parse,
                         candidate_parse,
+                        source_sha256,
+                        candidate_sha256,
                         outcome,
                         error_code,
                     ),
@@ -132,6 +143,8 @@ class NormalizationValidator:
                     self._audit_metadata(
                         source_parse,
                         candidate_parse,
+                        source_sha256,
+                        candidate_sha256,
                         outcome,
                         ErrorCode.NONE,
                     ),
@@ -147,6 +160,8 @@ class NormalizationValidator:
                 self._audit_metadata(
                     source_parse,
                     candidate_parse,
+                    source_sha256,
+                    candidate_sha256,
                     outcome,
                     ErrorCode.NONE,
                 ),
@@ -168,6 +183,8 @@ class NormalizationValidator:
                 self._audit_metadata(
                     source_parse,
                     candidate_parse,
+                    source_sha256,
+                    candidate_sha256,
                     outcome,
                     exc.code,
                 ),

@@ -77,13 +77,17 @@ Critically, successful translation yields canonical namespaced metadata, but:
 
 Environment portability must remain strictly isolated from capability authorization. Treating platform disparities (e.g., path handling, executable discovery, shell constraints) as environment compatibility concerns ensures that the Sovereign OS authority model remains untainted by platform-specific assumptions.
 
-**Finding:** Not yet allocated in core. Existing `DF-003` provides precedent for explicitly recording Windows-specific compatibility boundaries rather than silently absorbing them into higher-level semantics.
+**Finding:** Locally compatible with qualification. Empirical testing on Windows 11 with Ollama 0.32.13 confirmed that Muse Glimmer 30B loads successfully and enters interactive inference. No Windows launch-compatibility patch is presently justified by the observed evidence. The tested system is hardware-constrained, with Ollama reporting approximately 97% CPU / 3% GPU execution at a 4096-token context.
 
 ## 10. Muse Glimmer Disposition (002A)
 
-Searches of tracked BKI content, repository history, related compatibility temp trees, and the surrounding Codex workspace found no persisted Muse Glimmer Windows compatibility patch or adapter artifact. Accordingly, this review does not infer that such an implementation exists.
+Local empirical testing on Windows 11 with Ollama 0.32.13 confirmed that `hf.co/meta-models/Muse-Glimmer-30B-GGUF:latest` is installed, loads successfully, enters interactive inference, and is visible as an active model through `ollama ps`.
 
-This issue is recorded as a pending compatibility investigation (`BKI-SOL-COMPAT-002A`).
+The observed runtime reported approximately 97% CPU / 3% GPU execution with a 4096-token context on the tested NVIDIA T550 Laptop GPU system. This establishes local Windows launch compatibility while also demonstrating a substantial hardware/offload constraint.
+
+Accordingly, no Windows launch-compatibility patch is presently justified by the observed evidence.
+
+`BKI-SOL-COMPAT-002A` is therefore narrowed from a speculative Windows compatibility-patch investigation to agent/orchestrator integration and performance characterization.
 
 ## 11. Compatibility Findings Matrix
 
@@ -94,7 +98,7 @@ This issue is recorded as a pending compatibility investigation (`BKI-SOL-COMPAT
 | **Historical replay** | Compatible | BKI audit concepts are distinct from Sovereign historical replay. `executed_at_utc != admission_context_time`. |
 | **Fingerprinting** | Compatible | Validation content hashes and structural `FP-001` do not replace the Sovereign context binding. |
 | **Metadata** | Compatible | Successful translation != authorization. Namespace separation prevents implicit authority reinterpretation. |
-| **Runtime portability** | Unallocated | `DF-003` provides precedent for explicitly recording Windows-specific compatibility boundaries, but core agent-runtime parity is unallocated. No Muse/Glimmer record exists. |
+| **Runtime portability** | Locally compatible with qualification | Muse Glimmer 30B loads and enters inference under Windows 11 and Ollama 0.32.13. No launch patch is presently justified. Performance remains hardware-constrained at approximately 97% CPU / 3% GPU on the tested system. |
 
 ## 12. Required Invariants
 
@@ -127,4 +131,4 @@ This review strictly forbids the introduction of the following:
 
 The inspected BKI validation, metadata-translation, integration-contract, and fingerprinting surfaces do not conflict with the Sovereign OS admission-context and historical-replay boundaries evaluated by this review. No BKI production-code change is justified by the evidence presently inspected.
 
-Windows agent-runtime portability remains separately unallocated under `BKI-SOL-COMPAT-002A`.
+Windows launch compatibility for Muse Glimmer has been empirically demonstrated on the tested local system. `BKI-SOL-COMPAT-002A` remains separately scoped to agent/orchestrator integration and performance characterization rather than a presumed Windows launch patch.

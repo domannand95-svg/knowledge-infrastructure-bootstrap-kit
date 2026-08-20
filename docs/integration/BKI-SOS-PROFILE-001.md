@@ -1,8 +1,8 @@
 ---
 document_id: BKI-SOS-PROFILE-001
 version: 1.0
-status: Proposed Compatibility Profile
-last_revised: 2026-08-11
+status: Active Beta Compatibility Profile
+last_revised: 2026-08-20
 ---
 
 # BKI and Sovereign OS Language Compatibility Profile v1
@@ -77,3 +77,11 @@ Canonical metadata records must validate against
 input, aliased Sovereign input, missing fields, conflicting aliases, invalid
 dates, unknown namespaces, unknown profile versions, and authority-confusion
 attempts before beta activation.
+
+## Activation
+
+This profile is active for the read-only Sovereign beta boundary beginning with
+`bki-sovereign-v1.0.0-beta.1`. Activation grants no execution, promotion,
+registry, policy, or repository-write authority. Consumers must pin the release
+commit, contract version, and canonical schema digest and must fail closed on
+any mismatch.

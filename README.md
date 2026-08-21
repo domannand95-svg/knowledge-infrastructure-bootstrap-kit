@@ -27,7 +27,7 @@ The BKI repository baseline is commissioned and `VAL-001 v1.0` is closed. The ac
 - fail-closed structural, prose, and protected-content checks;
 - immutable audit metadata and deterministic classification logs;
 - `bki.validation.v1` result serialization; and
-- the proposed `bki.sovereign.profile.v1` metadata compatibility boundary.
+- the active read-only-beta `bki.sovereign.profile.v1` metadata compatibility boundary.
 
 Historical commissioning records remain evidence of the state and test counts at their recorded dates. The current test suite is the operational repository regression gate.
 
@@ -106,9 +106,35 @@ BKI and Sovereign OS are independent repositories with complementary responsibil
 - BKI validates knowledge artifacts and produces provenance-rich validation evidence.
 - Sovereign OS determines whether a candidate may cross an explicit admission or authority boundary and whether any governed state transition is permitted.
 
-The proposed `bki.sovereign.profile.v1` contract aligns selected metadata without collapsing those responsibilities. BKI quarantine is validation evidence, not a Sovereign disposition. BKI success does not authorize registry mutation, evidence admission, promotion, capability creation, tool execution, or any other effect.
+The active read-only-beta `bki.sovereign.profile.v1` contract aligns selected metadata without collapsing those responsibilities. BKI quarantine is validation evidence, not a Sovereign disposition. BKI success does not authorize registry mutation, evidence admission, promotion, capability creation, tool execution, or any other effect.
 
 Compatibility or integration becomes active only through its own pinned, reviewed, tested, and explicitly approved gate.
+
+### Current cross-repository status
+
+Sovereign OS now has an experimental `AGENT-BETA-018` runtime path that can accept candidate proposals from OpenAI-compatible local models, negotiate capabilities, bind grants to exact targets and records, and verify execution replay deterministically. This strengthens the consumer boundary; it does not expand BKI's authority.
+
+The safe integration route remains:
+
+```text
+BKI validation result
+        |
+        v
+Sovereign observation / evidence
+        |
+        v
+independent policy evaluation
+        |
+        v
+Sovereign capability registry
+```
+
+A BKI result cannot sign a policy evaluation, create or consume a capability grant, authorize a tool, or execute an effect. The `bki.sovereign.profile.v1` profile is activated only for the pinned read-only beta boundary defined in [`docs/integration/BKI-SOS-BETA-001.md`](docs/integration/BKI-SOS-BETA-001.md) and [`docs/integration/BKI-SOS-PROFILE-001.md`](docs/integration/BKI-SOS-PROFILE-001.md).
+
+The Sovereign cross-repository suite passed locally on Windows against the
+exact pinned BKI runtime commit. The activated release is
+`bki-sovereign-v1.0.0-beta.1`; release CI verifies the same boundary on Windows
+and Linux.
 
 ## Engineering Rules
 

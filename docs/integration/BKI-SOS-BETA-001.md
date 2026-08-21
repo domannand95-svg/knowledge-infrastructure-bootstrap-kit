@@ -1,15 +1,15 @@
 ---
 document_id: BKI-SOS-BETA-001
-version: 0.1
-status: Proposed Beta Contract
-last_revised: 2026-08-11
+version: 1.0
+status: Active Read-Only Beta Contract
+last_revised: 2026-08-20
 ---
 
 # BKI and Sovereign OS Read-Only Beta Integration Contract
 
 ## Purpose
 
-This contract defines the proposed boundary by which Sovereign OS may request a
+This contract defines the active beta boundary by which Sovereign OS may request a
 deterministic BKI validation and consume the result during beta testing. It does
 not authorize implementation, production use, repository mutation, evidence
 promotion, or execution inside the Sovereign OS production core.
@@ -24,7 +24,7 @@ promotion, or execution inside the Sovereign OS production core.
 6. Unknown versions, malformed output, timeouts, and adapter failures fail closed.
 7. Neither repository receives ambient write access to the other.
 
-## Proposed Invocation Boundary
+## Invocation Boundary
 
 The implementation phase may add a BKI-owned command-line adapter with this
 conceptual interface:
@@ -47,9 +47,9 @@ The adapter shall:
 - apply a caller-enforced timeout and resource budget; and
 - produce output conforming to `bki-validation-result-v1.schema.json`.
 
-This interface is implemented as a read-only adapter. Beta activation remains
-subject to the release, consumer, compatibility-CI, and owner-approval gates
-defined below.
+This interface is implemented as a read-only adapter. The first activated beta
+release is `bki-sovereign-v1.0.0-beta.1`; consumers must still pin its exact
+commit and schema digest.
 
 ## Result Semantics
 
@@ -137,12 +137,10 @@ consumer, passing cross-repository compatibility CI, and explicit owner approval
 - model training or research ingestion; and
 - weakening either repository's existing governance controls.
 
-## Proposed Implementation Order
+## Activation Record
 
-1. Review and freeze this contract.
-2. Add deterministic JSON serialization to BKI.
-3. Add the read-only BKI command-line adapter and negative tests.
-4. Tag the first contract-bearing BKI pre-release.
-5. Add a quarantined Sovereign OS consumer fixture.
-6. Add cross-platform compatibility CI using the pinned release.
-7. Review evidence and explicitly decide whether to activate beta testing.
+The repository owner authorized beta activation on 2026-08-20 after the BKI
+regression suite and the pinned Sovereign compatibility suite passed locally on
+Windows. Release publication and the configured Windows/Ubuntu workflow provide
+the remaining reviewable release evidence. Any failure or identity mismatch
+must fail closed and suspend consumption of the profile.
